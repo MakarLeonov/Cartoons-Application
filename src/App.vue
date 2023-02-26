@@ -2,25 +2,15 @@
   <div class="container">
     <p class="title">Cartoons </p>
     <div class="form">
-      <my-select />
-      <my-select />
-      <my-select />
-      <my-button style="width: 124px;">Sort</my-button>
+      <my-select :options="dimensions" @changeOption="(value) => currentDimension = value"/>
+      <!-- <my-select />
+      <my-select :genres="genres"/> -->
+      <my-button @click="getCartoons" style="width: 124px;">Sort</my-button>
       <my-input />
     </div>
 
     <div class="cartoons">
-      <div class="cartoon" v-for="(cartoon, index) in cartoons" :key="index">
-        <img :src="cartoon.image" alt="image not found😢">
-        <div class="cartoon-info">
-            <p class="name">{{ cartoon.title }}</p>
-            <p class="author">by {{ cartoon.creator[0] }}</p>
-            <p class="paragraph">Year: {{ cartoon.year }}</p>
-            <p class="paragraph">Epizodes: {{ cartoon.episodes }}</p>
-            <p class="paragraph">Runtime: {{ cartoon.runtime_in_minutes }} min</p>
-            <p class="paragraph">Genre: {{ cartoon.genre.join(', ') }}</p>
-        </div>
-      </div>
+      <v-cartoon v-for="(cartoon, index) in cartoons" :key="index" :cartoon="cartoon"/>
     </div>
 
     <div class="bottom">
@@ -30,7 +20,7 @@
         <my-pagination-item>3</my-pagination-item>
         <my-pagination-item>4</my-pagination-item>
       </div>
-      <my-select />
+      <!-- <my-select /> -->
     </div> 
   </div>
 </template>
@@ -40,32 +30,55 @@ import MySelect from "@/components/UI/MySelect.vue"
 import MyButton from "@/components/UI/MyButton.vue" 
 import MyInput from "@/components/UI/MyInput.vue" 
 import MyPaginationItem from "@/components/UI/MyPaginationItem.vue" 
+import vCartoon from "@/components/vCartoon.vue" 
 
 export default {
   components: {
-    MySelect, MyButton, MyInput, MyPaginationItem
+    MySelect, MyButton, MyInput, MyPaginationItem, vCartoon
   },
 
   data() {
     return {
       currentDimension: 'cartoons2D',
-      dimensions: ['cartoons2D', 'cartoons3D'],
+      currentGenre: '',
+      sortingType: '',
+
+      dimensions: [
+        { value: 'cartoons2D', title: '2D cartoons'},
+        { value: 'cartoons3D', title: '3D cartoons'},
+      ],
+      genres: [{vaule: '', title: 'All genres'},],
       cartoons: [],
     }
   },
 
   methods: {
-    async getCartoons(dimension) {
+
+    async getCartoons() {
       let response = await fetch(`https://api.sampleapis.com/cartoons/${this.currentDimension}`)
       this.cartoons = await response.json()
-      console.log(this.cartoons)
+    },
+
+    getGenres(cartoons) {
+      cartoons.forEach(cartoon => {
+        cartoon.genre.forEach(item => {
+          this.genres.forEach(obj => {
+            (obj.title === item) ? false : console.log(true)
+          })
+        })
+      })
+
+      console.log(this.genres)
     }
+
+    
   },
 
 
 
   async mounted() {
-    this.getCartoons(this.currentDimension)
+    await this.getCartoons(this.currentDimension)
+    this.getGenres(this.cartoons)
   }
 }
 </script>
@@ -116,46 +129,6 @@ body {
 
 .form {
   margin-bottom: 30px;
-}
-
-.cartoon {
-  width: 750px;
-  height: 450px;
-  color: #EDF5E1;
-
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  transition: all .2s ease-out;
-
-  &:hover {
-    background: hsla(0, 0%, 100%, 0.018);
-    box-shadow: 0px 0px 15px rgba($color: #000000, $alpha: 0.16);
-    transition: all .2s ease-in;
-  }
-  
-  img {
-    height: 100%;
-    width: 300px;
-  }
-
-  .name {
-    margin-top: 190px;
-    font-weight: 700;
-    font-size: 27px;
-    line-height: 30px;
-  }
-
-  .paragraph, .author {
-    margin-top: 7px;
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 22px;
-  }
-
-  .author {
-    margin-bottom: 37px;
-  }
 }
 
 

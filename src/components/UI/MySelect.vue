@@ -2,13 +2,15 @@
     <div :class="['select-menu', (isActive) ? 'active' : '']" >
         <div class="select-btn" @click="isActive = !isActive">
             <span class="sBtn-text">{{ optionTitle }}</span>
-            <i class="bx bx-chevron-down"></i>
+            <i class="bx bx-chevron-down">
+                <span class="material-symbols-outlined">keyboard_arrow_down</span>
+            </i>
         </div>
 
         <ul class="options">
             <li class="option"
                 v-for="(option, index) in options" :key="index"
-                @click="isActive = !isActive, optionTitle = option.title">
+                @click="isActive = !isActive, optionTitle = option.title, changeOption(option.value)">
                 <i class="bx bxl-github" style="color: #171515;"></i>
                 <span class="option-text">{{ option.title }}</span>
             </li>
@@ -18,16 +20,22 @@
 <script>
 export default {
 
+    props: {
+        options: {
+            type: Array,
+        }
+    },
+
     data() {
         return {
             isActive: false,
-            optionTitle: 'Select your option',
+            optionTitle: this.options[0].title,
+        }
+    },
 
-            options: [
-                {title: '2D'},
-                {title: '3D'},
-                {title: '11D'},
-            ]
+    methods: {
+        changeOption(value){
+            this.$emit('changeOption', value)
         }
     },
 
@@ -62,7 +70,7 @@ export default {
     background: #EDF5E1;
     padding: 20px;
     font-size: 18px;
-    font-weight: 400;
+    font-weight: 700;
     border-radius: 8px;
     align-items: center;
     cursor: pointer;
@@ -120,11 +128,22 @@ export default {
 }
 .option .option-text{
     font-size: 18px;
+    font-weight: 600;
     // color: #333;
 }
 
 .option .option-text:hover{
     color: #F2F2F2;
     transition: all .2s ease-in;
+}
+
+.bx-chevron-down {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+        font-size: 30px;
+    }
 }
 </style>
