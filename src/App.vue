@@ -2,34 +2,23 @@
   <div class="container">
     <p class="title">Cartoons </p>
     <div class="form">
-      <my-header />
-      <my-header />
-      <my-header />
+      <my-select />
+      <my-select />
+      <my-select />
       <my-button style="width: 124px;">Sort</my-button>
       <my-input />
     </div>
 
     <div class="cartoons">
-      <div class="cartoon">
-        <img src="https://nick.mtvnimages.com/uri/mgid:arc:content:nick.com:9cd2df6e-63c7-43da-8bde-8d77af9169c7?quality=0.7" alt="image">
+      <div class="cartoon" v-for="(cartoon, index) in cartoons" :key="index">
+        <img :src="cartoon.image" alt="image not found😢">
         <div class="cartoon-info">
-            <p class="name">Spongebob Squarepants</p>
-            <p class="author">by Stephen Hillenburg</p>
-            <p class="paragraph">Year: 1990</p>
-            <p class="paragraph">Epizodes: 279</p>
-            <p class="paragraph">Runtime: 22 min</p>
-            <p class="paragraph">Genre: Comedy, Family</p>
-        </div>
-      </div>
-      <div class="cartoon">
-        <img src="https://nick.mtvnimages.com/uri/mgid:arc:content:nick.com:9cd2df6e-63c7-43da-8bde-8d77af9169c7?quality=0.7" alt="image">
-        <div class="cartoon-info">
-            <p class="name">Spongebob Squarepants</p>
-            <p class="author">by Stephen Hillenburg</p>
-            <p class="paragraph">Year: 1990</p>
-            <p class="paragraph">Epizodes: 279</p>
-            <p class="paragraph">Runtime: 22 min</p>
-            <p class="paragraph">Genre: Comedy, Family</p>
+            <p class="name">{{ cartoon.title }}</p>
+            <p class="author">by {{ cartoon.creator[0] }}</p>
+            <p class="paragraph">Year: {{ cartoon.year }}</p>
+            <p class="paragraph">Epizodes: {{ cartoon.episodes }}</p>
+            <p class="paragraph">Runtime: {{ cartoon.runtime_in_minutes }} min</p>
+            <p class="paragraph">Genre: {{ cartoon.genre.join(', ') }}</p>
         </div>
       </div>
     </div>
@@ -41,20 +30,42 @@
         <my-pagination-item>3</my-pagination-item>
         <my-pagination-item>4</my-pagination-item>
       </div>
-      <my-header />
-    </div>
+      <my-select />
+    </div> 
   </div>
 </template>
 
 <script>
-import MyHeader from "@/components/UI/MyHeader.vue" 
+import MySelect from "@/components/UI/MySelect.vue" 
 import MyButton from "@/components/UI/MyButton.vue" 
 import MyInput from "@/components/UI/MyInput.vue" 
 import MyPaginationItem from "@/components/UI/MyPaginationItem.vue" 
 
 export default {
   components: {
-    MyHeader, MyButton, MyInput, MyPaginationItem
+    MySelect, MyButton, MyInput, MyPaginationItem
+  },
+
+  data() {
+    return {
+      currentDimension: 'cartoons2D',
+      dimensions: ['cartoons2D', 'cartoons3D'],
+      cartoons: [],
+    }
+  },
+
+  methods: {
+    async getCartoons(dimension) {
+      let response = await fetch(`https://api.sampleapis.com/cartoons/${this.currentDimension}`)
+      this.cartoons = await response.json()
+      console.log(this.cartoons)
+    }
+  },
+
+
+
+  async mounted() {
+    this.getCartoons(this.currentDimension)
   }
 }
 </script>
@@ -94,6 +105,13 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
+
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
 .form {
@@ -118,6 +136,7 @@ body {
   
   img {
     height: 100%;
+    width: 300px;
   }
 
   .name {
