@@ -1,8 +1,21 @@
 <template>
-    <input type="text" class="input" placeholder="Search...">
+    <input v-model="searchingStr" type="text" class="input" placeholder="Search...">
 </template>
 <script>
 export default {
+    data() {
+        return {
+            searchingStr: '',
+
+
+        }
+    },
+
+    watch: {
+        searchingStr(){
+            this.$emit('searchingStr', this.searchingStr)
+        }
+    }
     
 }
 </script>

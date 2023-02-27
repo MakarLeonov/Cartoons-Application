@@ -7,14 +7,18 @@
             </i>
         </div>
 
-        <ul class="options">
-            <li class="option"
-                v-for="(option, index) in options" :key="index"
-                @click="isActive = !isActive, optionTitle = option.title, changeOption(option.value)">
-                <i class="bx bxl-github" style="color: #171515;"></i>
-                <span class="option-text">{{ option.title }}</span>
-            </li>
-        </ul>
+        <transition name="slide-fade">
+            <ul class="options">
+                <li class="option"
+                    v-for="(option, index) in options" :key="index"
+                    @click="isActive = !isActive, optionTitle = option.title, changeOption(option.value)">
+                    <i class="bx bxl-github" style="color: #171515;"></i>
+                    <span class="option-text">{{ option.title }}</span>
+                </li>
+            </ul>        
+        </transition>
+
+        
     </div>
 </template>
 <script>
@@ -38,31 +42,13 @@ export default {
             this.$emit('changeOption', value)
         }
     },
-
-
-    mounted() {
-        const optionMenu = document.querySelector(".select-menu"),
-            selectBtn = optionMenu.querySelector(".select-btn"),
-            options = optionMenu.querySelectorAll(".option"),
-            sBtn_text = optionMenu.querySelector(".sBtn-text");
-
-        // selectBtn.addEventListener("click", () => optionMenu.classList.toggle("active"));       
-
-        options.forEach(option =>{
-            option.addEventListener("click", ()=>{
-                let selectedOption = option.querySelector(".option-text").innerText;
-                sBtn_text.innerText = selectedOption;
-
-                // optionMenu.classList.remove("active");
-            });
-        });
-    },
     
 }
 </script>
 
 <style lang="scss" scoped>
 .select-menu .select-btn{
+    mit-width: 300px;
     width: 300px;
     display: flex;
     height: 55px;
@@ -95,7 +81,8 @@ export default {
     background: #fff;
     background: #EDF5E1;
     box-shadow: 0 0 3px rgba(0,0,0,0.1);
-    display: none;    transition: all .2s ease-out;
+    display: none;    
+    transition: all .2s ease-out;
 
 }
 .select-menu.active .options{
@@ -108,7 +95,7 @@ export default {
     display: flex;
     height: 55px;
     cursor: pointer;
-    padding: 0 16px;
+    // padding: 0 16px;
     border-radius: 8px;
     align-items: center;
     background: #fff;
@@ -145,5 +132,19 @@ export default {
     span {
         font-size: 30px;
     }
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 </style>

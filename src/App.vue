@@ -3,14 +3,15 @@
     <p class="title">Cartoons </p>
     <div class="form">
       <my-select :options="dimensions" @changeOption="(value) => currentDimension = value"/>
-      <!-- <my-select />
-      <my-select :genres="genres"/> -->
-      <my-button @click="getCartoons" style="width: 124px;">Sort</my-button>
-      <my-input />
+      <my-select :options="sortingType" @click="(value) => currentSortingType = value"/>
+      <my-select :options="genres" @changeOption="(value) => currentGenre = value"/>
+      <my-button @click="getCartoons" style="width: 116px;">Sort</my-button>
+      <my-input @searchingStr="(value) => searchingStr = value"/>
+      <p>Total: {{ totalCartoons }}</p>
     </div>
 
     <div class="cartoons">
-      <v-cartoon v-for="(cartoon, index) in cartoons" :key="index" :cartoon="cartoon"/>
+      <v-cartoon v-for="(cartoon, index) in searchedCartoons" :key="index" :cartoon="cartoon"/>
     </div>
 
     <div class="bottom">
@@ -31,6 +32,7 @@ import MyButton from "@/components/UI/MyButton.vue"
 import MyInput from "@/components/UI/MyInput.vue" 
 import MyPaginationItem from "@/components/UI/MyPaginationItem.vue" 
 import vCartoon from "@/components/vCartoon.vue" 
+import { computed } from 'vue'
 
 export default {
   components: {
@@ -41,13 +43,36 @@ export default {
     return {
       currentDimension: 'cartoons2D',
       currentGenre: '',
-      sortingType: '',
+      currentSortingType: '',
+      currentPostAmount: '6',
+      searchingStr: '',
+      totalCartoons: '',
+
+      PostAmount: [
+        { value: 6, title: '2D cartoons'},
+        { value: 8, title: '3D cartoons'},
+        { value: 10, title: '3D cartoons'},
+      ],
 
       dimensions: [
         { value: 'cartoons2D', title: '2D cartoons'},
         { value: 'cartoons3D', title: '3D cartoons'},
       ],
-      genres: [{vaule: '', title: 'All genres'},],
+
+      sortingType: [
+        { value: 'cartoons3D', title: 'Without sorting', titleRu: 'Без сортировки'},
+        { value: 'cartoons3D', title: 'By releaze date 👆', titleRu: 'По дате релиза 👆'},
+        { value: 'cartoons3D', title: 'By releaze date 👇', titleRu: 'По дате релиза 👇'},
+        // { value: 'cartoons3D', title: 'Old ones first 🦔', titleRu: 'Сначала старые 🦔'},
+        // { value: 'cartoons3D', title: 'New ones first 🐤', titleRu: 'Сначала новые 🐤'},
+        { value: 'cartoons3D', title: 'By duration 👇', titleRu: 'По длительности 👆'},
+        { value: 'cartoons3D', title: 'By duration 👆', titleRu: 'По длительности 👇'},
+        { value: 'cartoons3D', title: 'By epizodes amount 👇', titleRu: 'По кол-ву эпизодов 👆'},
+        { value: 'cartoons3D', title: 'By epizodes amount 👆', titleRu: 'По кол-ву эпизодов 👇'},
+      ],
+
+      genres: [{value: '', title: 'All genres'}],
+      genresArr: [],
       cartoons: [],
     }
   },
@@ -57,29 +82,48 @@ export default {
     async getCartoons() {
       let response = await fetch(`https://api.sampleapis.com/cartoons/${this.currentDimension}`)
       this.cartoons = await response.json()
+      // console.log(this.currentDimension, this.currentGenre, this.currentSortingType)
+
     },
 
     getGenres(cartoons) {
       cartoons.forEach(cartoon => {
         cartoon.genre.forEach(item => {
-          this.genres.forEach(obj => {
-            (obj.title === item) ? false : console.log(true)
-          })
+          (this.genresArr.includes(item)) ? false : (this.genresArr.push(item) && this.genres.push({value: item, title: item}));
         })
       })
-
-      console.log(this.genres)
     }
 
-    
   },
-
-
 
   async mounted() {
     await this.getCartoons(this.currentDimension)
     this.getGenres(this.cartoons)
-  }
+    console.log(this.cartoons)
+  },
+
+  computed: {
+    sortedCartoons() {
+      return this.cartoons.filter(cartoon => {
+        return (cartoon.genre.includes(this.currentGenre) || this.currentGenre === '') ? true : false;
+      })
+    },
+
+    searchedCartoons() {
+      return this.cartoons.filter(cartoon => {
+        return cartoon.creator[0].toUpperCase().includes(this.searchingStr.toUpperCase()) 
+                || cartoon.title.toUpperCase().includes(this.searchingStr.toUpperCase())
+                || this.searchingStr === ''
+      })
+    }
+  },
+
+  watch: {  
+    cartoons(){
+      this.totalCartoons = this.cartoons.length
+    }
+  },
+
 }
 </script>
 
