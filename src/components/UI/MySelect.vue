@@ -8,7 +8,7 @@
         </div>
 
         <transition name="slide-fade">
-            <ul class="options">
+            <ul :class="['options', (isActive) ? 'active' : '']">
                 <li class="option"
                     v-for="(option, index) in options" :key="index"
                     @click="isActive = !isActive, optionTitle = option.title, changeOption(option.value)">

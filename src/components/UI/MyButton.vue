@@ -21,7 +21,7 @@ export default {
         align-items: center;
         cursor: pointer;
         justify-content: center;
-        transition: all .1s ease-out;
+        transition: all .2s ease-out;
 
         border: 2px solid #EDF5E1;
         border-radius: 12px;
@@ -29,7 +29,7 @@ export default {
         &:hover {
             color: #1E1E1E;
             background: #EDF5E1;
-            transition: all .2s ease-in;
+            transition: all .25s ease-in;
         }
 
     }

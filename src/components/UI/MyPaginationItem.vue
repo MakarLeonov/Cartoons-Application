@@ -1,11 +1,26 @@
 <template>
-    <div class="button">
-        <slot></slot>
+    <div :class="['button', {'active': page === pageNumber}]" @click="show">
+        <slot class="slot"></slot>
     </div>
 </template>
 <script>
 export default {
-    
+    props: {
+        page: {
+            type: Number,
+        },
+
+        pageNumber: {
+            type: Number,
+            default: 1
+        }
+    },
+
+    methods: {
+        show() {
+            console.log('Page: ', this.page, ', PageNumber: ', this.pageNumber )
+        }
+    },
 }
 </script>
 <style lang="scss" scoped>
@@ -26,17 +41,22 @@ export default {
         border: 2px solid #EDF5E1;
         border-radius: 12px;
 
+        z-index: 0;
+
         &:hover {
             color: #1E1E1E;
             background: #EDF5E1;
             transition: all .2s ease-in;
         }
 
-        &:active {
+        .slot {
+            z-index: 2;
+        }
+    }
+
+    .active {
             color: #1E1E1E;
             background: #EDF5E1;
             transition: all .2s ease-in;
         }
-
-    }
 </style>
